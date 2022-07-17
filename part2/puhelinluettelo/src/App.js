@@ -88,6 +88,11 @@ const App = () => {
         setNewNumber('')
         setNotification({message: `Added ${newName}`, color: 'green'})
         setTimeout(() => setNotification({message: null}), 5000)
+      },
+      error => {
+        console.log(error)
+        setNotification({message: error.response.data.error, color: 'red'})
+        setTimeout(() => setNotification({message: null}), 5000)
       })
   }
   const deletePerson = (person) => {
