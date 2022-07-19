@@ -75,7 +75,9 @@ const App = () => {
             setTimeout(() => setNotification({message: null}), 5000)
           })
           .catch(error => {
-            setNotification({message: `Information of ${newName} has already been removed from server`, color: 'red'})
+            // setNotification({message: `Information of ${newName} has already been removed from server`, color: 'red'})
+            console.log(error.response.data)
+            setNotification({message: error.response.data.error, color: 'red'})
             setTimeout(() => setNotification({message: null}), 5000)
           })
       }
@@ -90,7 +92,7 @@ const App = () => {
         setTimeout(() => setNotification({message: null}), 5000)
       },
       error => {
-        console.log(error)
+        console.log(error.response.data)
         setNotification({message: error.response.data.error, color: 'red'})
         setTimeout(() => setNotification({message: null}), 5000)
       })
