@@ -5,5 +5,6 @@ Content-Type: application/json
     "title": "Bilbo Baggins",
     "author": "Dildo Daggins",
     "url": "http://www.bilborino.com",
-    "likes": 1000000000
+    "likes": 1000000000,
+    "user": "62dd7e4b9352873e83e5dd5d"
 }
