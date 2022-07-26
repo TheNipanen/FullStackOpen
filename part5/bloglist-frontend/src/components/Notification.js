@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 const Notification = ({ message, color }) => {
   if (message === null) {
     return null
@@ -17,6 +19,15 @@ const Notification = ({ message, color }) => {
       {message}
     </div>
   )
+}
+
+Notification.propTypes = {
+  message: function(props, propName, componentName) {
+    if (typeof props[propName] !== 'string' && props[propName] !== null) {
+      return new Error('Invalid message type in Notification')
+    }
+  },
+  color: PropTypes.string
 }
 
 export default Notification

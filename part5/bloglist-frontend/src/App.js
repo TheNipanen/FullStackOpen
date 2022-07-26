@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Notification from './components/Notification'
@@ -11,6 +11,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({message: null})
+  const [showCreateBlog, setShowCreateBlog] = useState(false)
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -42,17 +43,19 @@ const App = () => {
     setTimeout(() => setNotification({ message: null }), 3000)
   }
 
-  const fetchBlogs = () => {
+  const fetchBlogs = useCallback(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
+    ).catch(error =>
+      handleLogout()
     )
-  }
+  }, [])
 
   useEffect(() => {
     if (user) {
       fetchBlogs()
     }  
-  }, [user])
+  }, [user, fetchBlogs])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -99,9 +102,11 @@ const App = () => {
       <div>
         <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
       </div>
-      <CreateBlog callBack={fetchBlogs} setNotification={setNotification} />
+      {showCreateBlog
+        ? <CreateBlog callBack={fetchBlogs} setNotification={setNotification} closeForm={() => setShowCreateBlog(false)} />
+        : <button onClick={() => setShowCreateBlog(true)}>new blog</button>}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} callBack={fetchBlogs} setNotification={setNotification} user={user} />
       )}
     </div>
   )

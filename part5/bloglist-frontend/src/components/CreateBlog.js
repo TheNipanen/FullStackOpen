@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const CreateBlog = ({ callBack, setNotification }) => {
+const CreateBlog = ({ callBack, setNotification, closeForm, testCreate }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -16,6 +16,7 @@ const CreateBlog = ({ callBack, setNotification }) => {
       setUrl('')
       setNotification({ message: `A new blog ${createdBlog.title} by ${createdBlog.author} added`, color: 'green' })
       setTimeout(() => setNotification({ message: null }), 3000)
+      closeForm()
     } catch (exception) {
       setNotification({ message: 'Error while creating blog', color: 'red' })
       setTimeout(() => setNotification({ message: null }), 3000)
@@ -26,7 +27,11 @@ const CreateBlog = ({ callBack, setNotification }) => {
   return (
     <>
       <h2>create new</h2>
-      <form onSubmit={handleCreateBlog}>
+      {/* Testing assignment wanted the callback function */}
+      <form onSubmit={testCreate ? (event) => {
+        event.preventDefault()
+        testCreate({title, author, url})
+      } : handleCreateBlog}>
         <div>
           title:
           <input
@@ -55,6 +60,7 @@ const CreateBlog = ({ callBack, setNotification }) => {
           />
         </div>
         <button type='submit'>create</button>
+        <button onClick={() => closeForm()}>cancel</button>
       </form>
     </>
   )
