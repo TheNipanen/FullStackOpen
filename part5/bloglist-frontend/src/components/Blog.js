@@ -51,7 +51,7 @@ const Blog = ({ blog, callBack, setNotification, user, likeMock }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div>
         {blog.title} {blog.author}<button onClick={() => setExtended(!extended)}>{extended ? 'hide' : 'view'}</button>
       </div>
