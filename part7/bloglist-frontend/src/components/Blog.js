@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
 import { likeBlog, removeBlog, updateComments } from '../reducers/blogReducer'
 import { Link, useNavigate } from 'react-router-dom'
+import { List, ListItem } from '@mui/material'
 
 const Blog = ({ blog, user, likeMock, extended }) => {
   const dispatch = useDispatch()
@@ -113,11 +114,13 @@ const Blog = ({ blog, user, likeMock, extended }) => {
             />
             <button onClick={addComment}>add comment</button>
           </div>
-          <ul>
+          <List disablePadding>
             {blog.comments.map((c, i) => (
-              <li key={i}>{c}</li>
+              <ListItem key={i} divider>
+                {c}
+              </ListItem>
             ))}
-          </ul>
+          </List>
           {blog.user.username === user.username && (
             <button onClick={remove} style={removeStyle}>
               remove

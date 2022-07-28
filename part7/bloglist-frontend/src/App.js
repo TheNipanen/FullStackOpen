@@ -13,6 +13,19 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import userService from './services/users'
 
+import {
+  Container,
+  List,
+  ListItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material'
+
 const Menu = ({ user, handleLogout }) => {
   const padding = {
     paddingRight: 5,
@@ -114,104 +127,114 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification />
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
+      <Container>
+        <div>
+          <h2>Log in to application</h2>
+          <Notification />
+          <form onSubmit={handleLogin}>
+            <div>
+              username
+              <input
+                type="text"
+                value={username}
+                name="Username"
+                onChange={({ target }) => setUsername(target.value)}
+              />
+            </div>
+            <div>
+              password
+              <input
+                type="password"
+                value={password}
+                name="Password"
+                onChange={({ target }) => setPassword(target.value)}
+              />
+            </div>
+            <button type="submit">login</button>
+          </form>
+        </div>
+      </Container>
     )
   }
   return (
-    <div>
-      <Menu user={user} handleLogout={handleLogout} />
-      <h2>blog app</h2>
-      <Notification />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              {showCreateBlog ? (
-                <CreateBlog closeForm={() => setShowCreateBlog(false)} />
-              ) : (
-                <button id="new" onClick={() => setShowCreateBlog(true)}>
-                  new blog
-                </button>
-              )}
-              {blogs.map((blog) => (
-                <Blog key={blog.id} blog={blog} user={user} />
-              ))}
-            </>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <>
-              <h2>Users</h2>
-              <table>
-                <tbody>
-                  <tr>
-                    <th></th>
-                    <th>blogs created</th>
-                  </tr>
-                  {users.map((u) => (
-                    <tr key={u.id}>
-                      <td>
-                        <Link to={`/users/${u.id}`}>{u.name}</Link>
-                      </td>
-                      <td>{u.blogs.length}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          }
-        />
-        <Route
-          path="/users/:id"
-          element={
-            matchedUser && (
+    <Container>
+      <div>
+        <Menu user={user} handleLogout={handleLogout} />
+        <h2>blog app</h2>
+        <Notification />
+        <Routes>
+          <Route
+            path="/"
+            element={
               <>
-                <h2>{matchedUser.name}</h2>
-                <h3>added blogs</h3>
-                <ul>
-                  {matchedUser.blogs.map((b) => (
-                    <li key={b.id}>{b.title}</li>
-                  ))}
-                </ul>
+                {showCreateBlog ? (
+                  <CreateBlog closeForm={() => setShowCreateBlog(false)} />
+                ) : (
+                  <button id="new" onClick={() => setShowCreateBlog(true)}>
+                    new blog
+                  </button>
+                )}
+                {blogs.map((blog) => (
+                  <Blog key={blog.id} blog={blog} user={user} />
+                ))}
               </>
-            )
-          }
-        />
-        <Route
-          path="/blogs/:id"
-          element={
-            matchedBlog && <Blog blog={matchedBlog} user={user} extended />
-          }
-        />
-      </Routes>
-    </div>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <>
+                <h2>Users</h2>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell />
+                        <TableCell>blogs created</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {users.map((u) => (
+                        <TableRow key={u.id}>
+                          <TableCell>
+                            <Link to={`/users/${u.id}`}>{u.name}</Link>
+                          </TableCell>
+                          <TableCell>{u.blogs.length}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </>
+            }
+          />
+          <Route
+            path="/users/:id"
+            element={
+              matchedUser && (
+                <>
+                  <h2>{matchedUser.name}</h2>
+                  <h3>added blogs</h3>
+                  <List disablePadding>
+                    {matchedUser.blogs.map((b) => (
+                      <ListItem key={b.id} divider>
+                        {b.title}
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              )
+            }
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              matchedBlog && <Blog blog={matchedBlog} user={user} extended />
+            }
+          />
+        </Routes>
+      </div>
+    </Container>
   )
 }
 
