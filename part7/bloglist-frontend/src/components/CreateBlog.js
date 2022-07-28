@@ -1,7 +1,11 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
 import blogService from '../services/blogs'
 
-const CreateBlog = ({ callBack, setNotification, closeForm, testCreate }) => {
+const CreateBlog = ({ callBack, closeForm, testCreate }) => {
+  const dispatch = useDispatch()
+
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -14,15 +18,23 @@ const CreateBlog = ({ callBack, setNotification, closeForm, testCreate }) => {
       setTitle('')
       setAuthor('')
       setUrl('')
-      setNotification({
-        message: `A new blog ${createdBlog.title} by ${createdBlog.author} added`,
-        color: 'green',
-      })
-      setTimeout(() => setNotification({ message: null }), 3000)
+      dispatch(
+        setNotification(
+          {
+            message: `A new blog ${createdBlog.title} by ${createdBlog.author} added`,
+            color: 'green',
+          },
+          3
+        )
+      )
       closeForm()
     } catch (exception) {
-      setNotification({ message: 'Error while creating blog', color: 'red' })
-      setTimeout(() => setNotification({ message: null }), 3000)
+      dispatch(
+        setNotification(
+          { message: 'Error while creating blog', color: 'red' },
+          3
+        )
+      )
     }
     callBack()
   }

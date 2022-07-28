@@ -1,6 +1,8 @@
-import PropTypes from 'prop-types'
+import { useSelector } from 'react-redux'
 
-const Notification = ({ message, color }) => {
+const Notification = () => {
+  const { message, color } = useSelector((state) => state.notification)
+
   if (message === null) {
     return null
   }
@@ -19,16 +21,6 @@ const Notification = ({ message, color }) => {
       {message}
     </div>
   )
-}
-
-Notification.propTypes = {
-  // eslint-disable-next-line no-unused-vars
-  message: function (props, propName, componentName) {
-    if (typeof props[propName] !== 'string' && props[propName] !== null) {
-      return new Error('Invalid message type in Notification')
-    }
-  },
-  color: PropTypes.string,
 }
 
 export default Notification

@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
+
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Notification from './components/Notification'
@@ -6,11 +9,12 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ message: null })
   const [showCreateBlog, setShowCreateBlog] = useState(false)
 
   const handleLogin = async (event) => {
@@ -27,22 +31,26 @@ const App = () => {
       setUser(userData)
       setUsername('')
       setPassword('')
-      setNotification({
-        message: `Logged in as ${userData.name}`,
-        color: 'green',
-      })
-      setTimeout(() => setNotification({ message: null }), 3000)
+      dispatch(
+        setNotification(
+          {
+            message: `Logged in as ${userData.name}`,
+            color: 'green',
+          },
+          3
+        )
+      )
     } catch (exception) {
-      setNotification({ message: 'wrong credentials', color: 'red' })
-      setTimeout(() => setNotification({ message: null }), 3000)
+      dispatch(
+        setNotification({ message: 'wrong credentials', color: 'red' }, 3)
+      )
     }
   }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
-    setNotification({ message: 'Logged out', color: 'green' })
-    setTimeout(() => setNotification({ message: null }), 3000)
+    dispatch(setNotification({ message: 'Logged out', color: 'green' }, 3))
   }
 
   const fetchBlogs = useCallback(() => {
@@ -72,10 +80,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification
-          message={notification.message}
-          color={notification.color}
-        />
+        <Notification />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -103,7 +108,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notification.message} color={notification.color} />
+      <Notification />
       <div>
         <p>
           {user.name} logged in<button onClick={handleLogout}>logout</button>
@@ -112,7 +117,6 @@ const App = () => {
       {showCreateBlog ? (
         <CreateBlog
           callBack={fetchBlogs}
-          setNotification={setNotification}
           closeForm={() => setShowCreateBlog(false)}
         />
       ) : (
@@ -121,13 +125,7 @@ const App = () => {
         </button>
       )}
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          callBack={fetchBlogs}
-          setNotification={setNotification}
-          user={user}
-        />
+        <Blog key={blog.id} blog={blog} callBack={fetchBlogs} user={user} />
       ))}
     </div>
   )
