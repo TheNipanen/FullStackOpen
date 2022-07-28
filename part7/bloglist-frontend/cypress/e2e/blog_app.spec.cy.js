@@ -52,13 +52,13 @@ describe('Blog app', function () {
     })
 
     it('A blog can be liked', function () {
-      cy.contains('view').click()
+      cy.contains('Yeet Gamer Dude').click()
       cy.contains('like').click()
       cy.contains('1')
     })
 
     it('A blog can be removed by its creator', function () {
-      cy.contains('view').click()
+      cy.contains('Yeet Gamer Dude').click()
       cy.contains('remove').click()
       cy.get('html').should('not.contain', 'Yeet Gamer Dude')
     })
@@ -70,9 +70,10 @@ describe('Blog app', function () {
       cy.get('#url').type('yeet2.com')
       cy.get('#create').click()
 
-      cy.contains('Yeet 2 Gamer Dude').contains('view').click()
+      cy.contains('Yeet 2 Gamer Dude').click()
       cy.contains('like').click()
       cy.contains('1')
+      cy.contains('blogs').click()
       cy.get('.blog').eq(0).contains('Yeet 2 Gamer Dude')
       cy.get('.blog').eq(1).contains('Yeet Gamer Dude')
     })
