@@ -70,4 +70,15 @@ export const removeBlog = (id, handleError) => {
   }
 }
 
+export const updateComments = (id, comments, handleError) => {
+  return async (dispatch) => {
+    try {
+      const updatedBlog = await blogService.updateComments(comments, id)
+      dispatch(updateBlog(updatedBlog))
+    } catch (error) {
+      handleError()
+    }
+  }
+}
+
 export default blogSlice.reducer

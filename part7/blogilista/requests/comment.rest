@@ -1,0 +1,7 @@
+POST http://localhost:3003/api/blogs/62dd82065d39d52d6a8afdf7/comments
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkJpbGJvZXIxMjMiLCJpZCI6IjYyZGQ3ZTRiOTM1Mjg3M2U4M2U1ZGQ1ZCIsImlhdCI6MTY1OTAzMDI4OCwiZXhwIjoxNjU5MDMzODg4fQ.2iktvQn_vfepDcWlWuVsbbj9KBV-N2-FtP2Q3WnoFPM
+
+{
+    "comments": ["Daymnnn", "Gaming!"]
+}

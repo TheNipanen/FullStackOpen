@@ -1,26 +1,65 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
+
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
+import { setUser } from './reducers/userReducer'
 
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
+
+const Menu = ({ user, handleLogout }) => {
+  const padding = {
+    paddingRight: 5,
+  }
+  return (
+    <div style={{ background: 'lightgrey' }}>
+      <p>
+        <Link to="/" style={padding}>
+          blogs
+        </Link>
+        <Link to="/users" style={padding}>
+          users
+        </Link>
+        {user.name} logged in<button onClick={handleLogout}>logout</button>
+      </p>
+    </div>
+  )
+}
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [showCreateBlog, setShowCreateBlog] = useState(false)
+
+  const [users, setUsers] = useState([])
+  useEffect(() => {
+    userService.getAll().then((fetchedUsers) => setUsers(fetchedUsers))
+  }, [])
+
+  const userMatch = useMatch('/users/:id')
+  const matchedUser = userMatch
+    ? users.find((u) => u.id === userMatch.params.id) || null
+    : null
+  const blogMatch = useMatch('/blogs/:id')
+  const matchedBlog = blogMatch
+    ? blogs.find((b) => b.id === blogMatch.params.id) || null
+    : null
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
     event.preventDefault()
     // console.log('logging in with', username, password)
+    navigate('/')
 
     try {
       const userData = await loginService.login({
@@ -29,7 +68,7 @@ const App = () => {
       })
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(userData))
       blogService.setToken(userData.token)
-      setUser(userData)
+      dispatch(setUser(userData))
       setUsername('')
       setPassword('')
       dispatch(
@@ -50,7 +89,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    dispatch(setUser(null))
     dispatch(setNotification({ message: 'Logged out', color: 'green' }, 3))
   }
 
@@ -68,7 +107,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const userData = JSON.parse(loggedUserJSON)
-      setUser(userData)
+      dispatch(setUser(userData))
       blogService.setToken(userData.token)
     }
   }, [])
@@ -104,23 +143,74 @@ const App = () => {
   }
   return (
     <div>
-      <h2>blogs</h2>
+      <Menu user={user} handleLogout={handleLogout} />
+      <h2>blog app</h2>
       <Notification />
-      <div>
-        <p>
-          {user.name} logged in<button onClick={handleLogout}>logout</button>
-        </p>
-      </div>
-      {showCreateBlog ? (
-        <CreateBlog closeForm={() => setShowCreateBlog(false)} />
-      ) : (
-        <button id="new" onClick={() => setShowCreateBlog(true)}>
-          new blog
-        </button>
-      )}
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} user={user} />
-      ))}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              {showCreateBlog ? (
+                <CreateBlog closeForm={() => setShowCreateBlog(false)} />
+              ) : (
+                <button id="new" onClick={() => setShowCreateBlog(true)}>
+                  new blog
+                </button>
+              )}
+              {blogs.map((blog) => (
+                <Blog key={blog.id} blog={blog} user={user} />
+              ))}
+            </>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <>
+              <h2>Users</h2>
+              <table>
+                <tbody>
+                  <tr>
+                    <th></th>
+                    <th>blogs created</th>
+                  </tr>
+                  {users.map((u) => (
+                    <tr key={u.id}>
+                      <td>
+                        <Link to={`/users/${u.id}`}>{u.name}</Link>
+                      </td>
+                      <td>{u.blogs.length}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            matchedUser && (
+              <>
+                <h2>{matchedUser.name}</h2>
+                <h3>added blogs</h3>
+                <ul>
+                  {matchedUser.blogs.map((b) => (
+                    <li key={b.id}>{b.title}</li>
+                  ))}
+                </ul>
+              </>
+            )
+          }
+        />
+        <Route
+          path="/blogs/:id"
+          element={
+            matchedBlog && <Blog blog={matchedBlog} user={user} extended />
+          }
+        />
+      </Routes>
     </div>
   )
 }
