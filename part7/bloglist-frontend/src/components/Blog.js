@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
-import blogService from '../services/blogs'
+import { likeBlog, removeBlog } from '../reducers/blogReducer'
 
-const Blog = ({ blog, callBack, user, likeMock }) => {
+const Blog = ({ blog, user, likeMock }) => {
   const dispatch = useDispatch()
 
   const [extended, setExtended] = useState(false)
@@ -28,17 +28,16 @@ const Blog = ({ blog, callBack, user, likeMock }) => {
       url: blog.url,
     }
 
-    try {
-      await blogService.update(likedBlog, blog.id)
-    } catch (exception) {
-      dispatch(
-        setNotification(
-          { message: 'Error while updating blog', color: 'red' },
-          3
+    dispatch(
+      likeBlog(likedBlog, blog.id, () =>
+        dispatch(
+          setNotification(
+            { message: 'Error while updating blog', color: 'red' },
+            3
+          )
         )
       )
-    }
-    callBack()
+    )
   }
 
   const remove = async () => {
@@ -49,26 +48,25 @@ const Blog = ({ blog, callBack, user, likeMock }) => {
       return
     }
 
-    try {
-      await blogService.del(blog.id)
-      dispatch(
-        setNotification(
-          {
-            message: `Removed blog ${blog.title} by ${blog.author}`,
-            color: 'green',
-          },
-          3
+    dispatch(
+      removeBlog(blog.id, () =>
+        dispatch(
+          setNotification(
+            { message: 'Error while removing blog', color: 'red' },
+            3
+          )
         )
       )
-    } catch (exception) {
-      dispatch(
-        setNotification(
-          { message: 'Error while removing blog', color: 'red' },
-          3
-        )
+    )
+    dispatch(
+      setNotification(
+        {
+          message: `Removed blog ${blog.title} by ${blog.author}`,
+          color: 'green',
+        },
+        3
       )
-    }
-    callBack()
+    )
   }
 
   return (

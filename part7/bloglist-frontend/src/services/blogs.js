@@ -43,6 +43,15 @@ const del = async (id) => {
   return response.data
 }
 
+/* const get = async (id) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const response = await axios.get(`${baseUrl}/${id}`, config)
+  return response.data
+} */
+
 const exported = { create, del, getAll, setToken, update }
 
 export default exported

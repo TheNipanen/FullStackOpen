@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs } from './reducers/blogReducer'
 
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
@@ -10,8 +11,8 @@ import loginService from './services/login'
 
 const App = () => {
   const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
 
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -54,11 +55,7 @@ const App = () => {
   }
 
   const fetchBlogs = useCallback(() => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)))
-      // eslint-disable-next-line no-unused-vars
-      .catch((error) => handleLogout())
+    dispatch(initializeBlogs(handleLogout))
   }, [])
 
   useEffect(() => {
@@ -115,17 +112,14 @@ const App = () => {
         </p>
       </div>
       {showCreateBlog ? (
-        <CreateBlog
-          callBack={fetchBlogs}
-          closeForm={() => setShowCreateBlog(false)}
-        />
+        <CreateBlog closeForm={() => setShowCreateBlog(false)} />
       ) : (
         <button id="new" onClick={() => setShowCreateBlog(true)}>
           new blog
         </button>
       )}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} callBack={fetchBlogs} user={user} />
+        <Blog key={blog.id} blog={blog} user={user} />
       ))}
     </div>
   )
