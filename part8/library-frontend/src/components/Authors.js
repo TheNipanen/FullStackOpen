@@ -26,11 +26,10 @@ const Authors = (props) => {
   const setYear = async (event) => {
     event.preventDefault()
 
-    setBornTo({
+    await setBornTo({
       variables: { name, setBornTo: Number(born) },
     })
 
-    setName('')
     setBorn('')
   }
 
@@ -53,28 +52,35 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <h3>Set birthyear</h3>
-      <form onSubmit={setYear}>
-        <div>
-          name
-          <select onChange={({ target }) => setName(target.value)}>
-            {authors.map((au, i) => (
-              <option key={i} value={au.name}>
-                {au.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          born
-          <input
-            type="number"
-            value={born}
-            onChange={({ target }) => setBorn(target.value)}
-          />
-        </div>
-        <button type="submit">update author</button>
-      </form>
+      {props.token && (
+        <>
+          <h3>Set birthyear</h3>
+          <form onSubmit={setYear}>
+            <div>
+              name
+              <select
+                value={name}
+                onChange={({ target }) => setName(target.value)}
+              >
+                {authors.map((au, i) => (
+                  <option key={i} value={au.name}>
+                    {au.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              born
+              <input
+                type="number"
+                value={born}
+                onChange={({ target }) => setBorn(target.value)}
+              />
+            </div>
+            <button type="submit">update author</button>
+          </form>
+        </>
+      )}
     </div>
   )
 }
